@@ -20,6 +20,8 @@
 
 Drop in a pile of PDFs, Word files, scans and phone photos. DocuSort says what kind of document each one is and why, pulls out the details you'd look for first, marks personal numbers before you share a file, and hands the pile back as a zip sorted into folders.
 
+**Live demo:** [docusort-ai-34ft.onrender.com](https://docusort-ai-34ft.onrender.com) (free plan, sleeps when idle; the first request after a while takes about a minute)
+
 <img src="docs/screenshots/demo.gif" alt="Sorting five sample documents, opening the invoice to see why it was classified, and blacking out its personal numbers" width="100%">
 
 | At a glance | |
