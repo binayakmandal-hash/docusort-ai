@@ -1,13 +1,34 @@
-# DocuSort
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/readme/banner-dark.svg">
+  <img src="docs/readme/banner-light.svg" alt="DocuSort: drop the pile in, get it back filed" width="100%">
+</picture>
 
-[![tests](https://github.com/binayakmandal-hash/docusort-ai/actions/workflows/tests.yml/badge.svg)](https://github.com/binayakmandal-hash/docusort-ai/actions/workflows/tests.yml)
-![Python](https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-1.9-F7931E?logo=scikitlearn&logoColor=white)
-![License: MIT](https://img.shields.io/badge/license-MIT-2F6F73)
+<p align="center">
+  <a href="https://github.com/binayakmandal-hash/docusort-ai/actions/workflows/tests.yml"><img src="https://github.com/binayakmandal-hash/docusort-ai/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
+  <img src="https://img.shields.io/badge/python-3.13-3776AB?logo=python&logoColor=white" alt="Python 3.13">
+  <img src="https://img.shields.io/badge/scikit--learn-1.9-F7931E?logo=scikitlearn&logoColor=white" alt="scikit-learn 1.9">
+  <img src="https://img.shields.io/badge/license-MIT-2F6F73" alt="MIT license">
+</p>
+
+<p align="center">
+  <a href="#what-it-does">Features</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#how-accurate-is-it">Accuracy</a> ·
+  <a href="#run-it">Run it</a> ·
+  <a href="DATASETS.md">Datasets</a>
+</p>
 
 Drop in a pile of PDFs, Word files, scans and phone photos. DocuSort says what kind of document each one is and why, pulls out the details you'd look for first, marks personal numbers before you share a file, and hands the pile back as a zip sorted into folders.
 
-<img src="docs/screenshots/sort.png" alt="Five sample documents sorted into Contract, Email, Receipt or invoice and Resume trays" width="100%">
+<img src="docs/screenshots/demo.gif" alt="Sorting five sample documents, opening the invoice to see why it was classified, and blacking out its personal numbers" width="100%">
+
+| At a glance | |
+|---|---|
+| Document types | 8, plus a "Not sure" folder |
+| Accuracy on sources it never saw | 83% |
+| Personal-number kinds found | 11, with checksum validation where one exists |
+| Files per batch | up to 50 |
+| Data kept after you leave | none; batches expire from memory after 15 minutes |
 
 ## What it does
 
@@ -26,6 +47,28 @@ Drop in a pile of PDFs, Word files, scans and phone photos. DocuSort says what k
     <td width="40%"><img src="docs/screenshots/redacted.png" alt="Personal numbers blacked out in the document text"><br><sub>Redaction blacks out each number in place before the download.</sub><br><br><img src="docs/screenshots/trays-dark.png" alt="Sorted trays in dark mode"><br><sub>Dark mode follows your system setting.</sub></td>
   </tr>
 </table>
+
+## How it works
+
+```mermaid
+flowchart LR
+    A[PDF, Word, text,<br>photo or scan] --> B[Read text<br>pdf layer or Tesseract OCR]
+    B --> C[TF-IDF<br>word + character n-grams]
+    C --> D[Linear SVM<br>calibrated probabilities]
+    D -->|50% or more| E[Type + the words<br>that decided it]
+    D -->|below 50%| F[Not sure folder]
+    B --> G[Key details<br>rules per type]
+    B --> H[Personal numbers<br>Verhoeff and Luhn checks]
+    E --> I[Sorted zip<br>folders + index.csv]
+    F --> I
+    G --> I
+    H --> J[Redacted copy<br>last 4 digits kept]
+    J --> I
+```
+
+The explanation is exact, not estimated. A linear model's score for a type is the sum of each word's TF-IDF weight times the model's weight for that word, so the words shown are the actual terms that added the most to the decision, and the ones that pulled hardest towards the runner-up.
+
+Personal numbers with a built-in check digit are verified before they are flagged: Aadhaar with Verhoeff, cards with Luhn plus real card-network prefixes. Numbers without a checksum, like bank accounts and voter IDs, only count next to words such as "A/c" or "EPIC". On 4,307 training documents the finder flagged 0 Aadhaar or PAN numbers, which is the false-alarm check.
 
 ## How accurate is it?
 
