@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}How accurate is DocuSort?{% endblock %}
+{% block content %}
+{% set t = m.get('test', {}) %}{% set o = m.get('outside', {}) %}{% set rf = m.get('receipt_fields', {}) %}
+<section class="wrap page">
+  <p class="eyebrow">Accuracy</p>
+  <h1>How accurate is it?</h1>
+  <p class="lede">Measured, not estimated. Every number here comes from <code>reports/metrics.json</code>, which the training script writes. The short answer: very accurate on documents like the ones it learned from, noticeably less on documents from elsewhere.</p>
+
+  <div class="stats">
+    <div class="stat"><b>{{ '%.1f'|format(t.get('accuracy', 0) * 100) }}%</b><span>right on {{ m.get('dataset', {}).get('test') }} held-out documents from the training sources</span></div>
+    <div class="stat"><b>{{ '%.0f'|format(o.get('accuracy', 0) * 100) }}%</b><span>right on {{ m.get('dataset', {}).get('outside') }} documents from sources it never saw</span></div>
+    <div class="stat"><b>{{ '%.0f'|format(rf.get('total', 0) * 100) }}%</b><span>receipt totals read exactly, on {{ rf.get('receipts') }} scanned receipts</span></div>
+  </div>
+
+  <div class="callout"><strong>Why the first number is too optimistic.</strong> Each document type was learned mostly from a single public dataset. A model can partly learn "which dataset is this from" instead of "what kind of document is this", and the held-out test shares those datasets. The second number, from new sources, is closer to what you should expect.</div>
+
+  <h2>What it learned from</h2>
+  <p>{{ m.get('trained_on') }} real documents from public datasets, at most 600 per type:</p>
+  <table class="table">
+    <thead><tr><th>Type</th><th>Documents</th><th>Source</th><th>F1 on held-out test</th></tr></thead>
+    <tbody>
+    {% set src = {'cuad': 'CUAD: commercial contracts filed with the SEC', 'enron': 'Enron email corpus (non-spam)', 'funsd': 'FUNSD: scanned forms', 'mtsamples': 'MTSamples: medical transcriptions', 'bbc': 'BBC News articles', 'sroie': 'ICDAR 2019 SROIE: scanned receipts', 'resume_corpus': 'Resumes from indeed.com (resume_corpus)', 'scitldr': 'SciTLDR: computer-science papers', 'pubmed': 'PubMed 20k RCT: medical abstracts'} %}
+    {% for key, n in m.get('dataset', {}).get('per_class', {}).items() %}
+      <tr><td>{{ labels[key] }}</td><td class="num">{{ n }}</td>
+          <td>{% for s in m['dataset']['sources'][key] %}{{ src.get(s, s) }}{% if not loop.last %}; {% endif %}{% endfor %}</td>
+          <td class="num">{{ '%.3f'|format(t['per_class'][key]['f1']) }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Documents from sources it never saw</h2>
+  <table class="table">
+    <thead><tr><th>Source</th><th>Should be</th><th>Right</th><th>What it said</th></tr></thead>
+    <tbody>
+    {% set names = {'agnews': 'AG News articles', 'invoice2data': 'Real invoices (invoice2data samples)'} %}
+    {% for key, r in o.get('by_source', {}).items() %}
+      <tr><td>{{ names.get(key, key) }}</td><td>{{ labels[r.label] }}</td><td class="num">{{ (r.accuracy * r.n)|round|int }} of {{ r.n }}</td>
+          <td>{% for lab, n in r.predicted.items() %}{{ labels[lab] }} {{ n }}{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px">Invoices are the weak spot: the training data has shop receipts but no business invoices, and a printed invoice with many labelled fields looks a lot like a form to the model.</p>
+
+  <h2>A mistake that changed the training data</h2>
+  {% set l = m.get('leave_one_source_out', {}) %}
+  <p>The first version learned research papers only from computer-science papers. It then called {{ l.get('pubmed', {}).get('predicted', {}).get('medical_report', 0) }} of {{ l.get('pubmed', {}).get('n', 0) }} medical research abstracts "medical reports": it had learned the topic, not the kind of document. Medical abstracts were added to the training data. Repeating the test the other way round (trained without computer-science papers) still gets only {{ '%.0f'|format(l.get('scitldr', {}).get('accuracy', 0) * 100) }}% of them right, so a research paper from a field it hasn't seen may still be misread.</p>
+
+  <h2>Short and messy text</h2>
+  <table class="table">
+    <thead><tr><th>Test</th><th>Accuracy</th></tr></thead>
+    <tbody>
+    {% for k, v in m.get('robustness', {}).items() %}<tr><td>{{ k[:1]|upper }}{{ k[1:] }} of each held-out document</td><td class="num">{{ '%.1f'|format(v * 100) }}%</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px">OCR errors were simulated by swapping look-alike characters and dropping or doubling letters.</p>
+
+  <h2>Key details on receipts</h2>
+  <p>Checked against the answer key that comes with the SROIE dataset. The rules were written while looking only at receipts 0 to 99; these results are for the other {{ rf.get('receipts') }}, which were never looked at.</p>
+  <table class="table">
+    <thead><tr><th>Field</th><th>Exactly right</th></tr></thead>
+    <tbody>
+      <tr><td>Shop name</td><td class="num">{{ '%.1f'|format(rf.get('seller_exact', 0) * 100) }}% ({{ '%.1f'|format(rf.get('seller_loose', 0) * 100) }}% if a shorter or longer form of the name counts)</td></tr>
+      <tr><td>Date</td><td class="num">{{ '%.1f'|format(rf.get('date', 0) * 100) }}%</td></tr>
+      <tr><td>Total</td><td class="num">{{ '%.1f'|format(rf.get('total', 0) * 100) }}%</td></tr>
+    </tbody>
+  </table>
+  <p class="muted" style="margin-top:10px">Details for other document types (contract parties, resume contacts and so on) are extracted with similar rules but have no answer key to test against, so treat them as a starting point.</p>
+
+  {% set ss = m.get('sensitive_scan', {}) %}
+  <h2>Personal numbers</h2>
+  <p>There's no labelled dataset of Indian personal numbers to test against, so the finder was run over all {{ ss.get('documents') }} training documents (from US, UK and Malaysian sources) and every hit was read by hand. It flagged {% for k, n in ss.get('hits', {}).items() %}{{ n }} {{ {'email': 'email addresses', 'phone': 'phone numbers', 'card': 'card numbers', 'account': 'bank account numbers', 'aadhaar': 'Aadhaar numbers', 'pan': 'PANs'}.get(k, k) }}{% if not loop.last %}, {% endif %}{% endfor %}, and no Aadhaar numbers or PANs. On review, the card numbers were real payment and loyalty cards printed on receipts and the phone numbers were real.</p>
+  <p class="muted">The first version also flagged product barcodes as card numbers and a timestamp as an Aadhaar number. The rules were tightened after that review, so this is a false-alarm check, not a held-out test.</p>
+
+  <h2>Limits worth knowing</h2>
+  <ul>
+    <li>It only knows these 8 types. Anything else, like a party invitation, still gets one of the 8 labels, often with high confidence.</li>
+    <li>It reads English text only.</li>
+    <li>Photos and scans depend on OCR quality: blurred or skewed images give worse results.</li>
+    <li>The personal-number finder checks Aadhaar and card numbers with their check digits, but can still miss numbers written in unusual ways or flag a look-alike.</li>
+  </ul>
+</section>
+{% endblock %}

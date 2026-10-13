@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Privacy policy · DocuSort{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <h1>Privacy policy</h1>
+  <p class="muted">Effective 13 October 2026</p>
+  <h2>What happens to your files</h2>
+  <p>Files you upload are read in the server's memory to classify them, extract key details and look for personal numbers. They aren't saved and are never used to train the model. (Large uploads can pass through a temporary file that the web server deletes when the request ends.)</p>
+  <p>When you sort more than one file, the files are kept in memory for up to 15 minutes so you can download the sorted zip, then deleted. Restarting the server deletes them sooner.</p>
+  <h2>What we don't do</h2>
+  <ul>
+    <li>No accounts, no sign-in and no tracking or analytics.</li>
+    <li>No third-party AI service: the model runs on this server.</li>
+    <li>No selling or sharing of anything you upload.</li>
+  </ul>
+  <h2>Your browser</h2>
+  <p>Your colour theme choice is saved in your browser's local storage. There are no cookies.</p>
+  <h2>Personal numbers</h2>
+  <p>The personal-number finder only marks what it finds so you can redact it. Redacted copies are created on request and sent straight back to you.</p>
+  <h2>Contact</h2>
+  <p>Questions can be raised as an issue on <a href="https://github.com/binayakmandal-hash/docusort-ai/issues">GitHub</a>. If this policy changes, the new version and its date will appear here.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}DocuSort: sort documents by type{% endblock %}
+{% block content %}
+<section class="wrap intro">
+  <p class="eyebrow">Document sorter</p>
+  <h1>Drop the pile in. Get it back filed.</h1>
+  <p class="lede">DocuSort reads PDFs, Word files, scans and photos, says what kind of document each one is and why, pulls out the details you'd look for first, and marks personal numbers before you share the file.</p>
+</section>
+
+<section class="wrap desk" aria-label="Add documents">
+  <div class="intake">
+    <label class="tray-drop" id="drop" for="files">
+      <input type="file" id="files" multiple class="sr-only" accept=".pdf,.docx,.txt,.md,.eml,.png,.jpg,.jpeg,.webp,.tif,.tiff">
+      <svg class="tray-drop__art" viewBox="0 0 120 64" aria-hidden="true"><path d="M6 30 L22 8 H98 L114 30 V58 H6 Z"/><path d="M6 30 H40 L46 40 H74 L80 30 H114"/></svg>
+      <span class="tray-drop__title">Drop files here, or <u>choose files</u></span>
+      <span class="tray-drop__hint">PDF, Word (.docx), text, or a photo or scan (PNG, JPG). Up to 50 files, 40 MB in total.</span>
+    </label>
+    <div class="intake__side">
+      <button class="btn btn--ink" id="sample" type="button">Sort the sample pile</button>
+      <p class="hint">Five sample documents: a contract, an email, an invoice, a scanned receipt and a resume. The invoice holds made-up personal numbers to show the redaction.</p>
+      <details class="paste">
+        <summary>Paste text instead</summary>
+        <label class="sr-only" for="pasted">Document text</label>
+        <textarea id="pasted" rows="7" placeholder="Paste the text of one document"></textarea>
+        <button class="btn" id="paste-go" type="button">Sort this text</button>
+      </details>
+    </div>
+  </div>
+  <p class="error" id="error" role="alert" hidden></p>
+</section>
+
+<section class="wrap sorted" id="sorted" hidden aria-live="polite">
+  <div class="sorted__bar">
+    <h2 id="sorted-title">Sorted</h2>
+    <div class="sorted__actions" id="zip-actions" hidden>
+      <label class="check"><input type="checkbox" id="with-redacted"> Add redacted text copies</label>
+      <a class="btn btn--ink" id="zip" href="#"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg>Download sorted zip</a>
+    </div>
+  </div>
+  <div class="trays" id="trays"></div>
+</section>
+
+<section class="wrap" id="detail-wrap" hidden>
+  <article class="detail" id="detail" tabindex="-1"></article>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>window.DS_LABELS = {{ labels|tojson }};</script>
+<script src="{{ url_for('static', filename='js/sort.js') }}"></script>
+{% endblock %}

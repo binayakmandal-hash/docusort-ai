@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Terms and conditions · DocuSort{% endblock %}
+{% block content %}
+<section class="wrap page">
+  <h1>Terms and conditions</h1>
+  <p class="muted">Effective 13 October 2026</p>
+  <h2>What DocuSort is</h2>
+  <p>DocuSort is a free, open-source tool that suggests a type for each document, extracts some details and marks personal numbers. It is a helper, not a records system, and it can be wrong.</p>
+  <h2>Your responsibility</h2>
+  <ul>
+    <li>Check the type, the extracted details and any redaction before you rely on them or share a file. A redacted copy may still contain personal information the finder missed.</li>
+    <li>Only upload documents you have the right to process.</li>
+    <li>Don't use DocuSort as the only basis for legal, medical, financial or hiring decisions.</li>
+  </ul>
+  <h2>Availability</h2>
+  <p>The public demo is provided as is, without warranties of any kind, and may be slow, change or go offline. To the extent the law allows, the authors aren't liable for any loss from using it or from it being unavailable.</p>
+  <h2>Licence</h2>
+  <p>The code is available under the <a href="https://github.com/binayakmandal-hash/docusort-ai/blob/main/LICENSE">MIT licence</a>. The training datasets keep their own licences, listed in <code>DATASETS.md</code>.</p>
+  <h2>Privacy</h2>
+  <p>See the <a href="{{ url_for('privacy_page') }}">privacy policy</a>.</p>
+</section>
+{% endblock %}

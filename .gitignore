@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+# Built from public datasets with src/build_dataset.py; not redistributed here (see DATASETS.md)
+data/

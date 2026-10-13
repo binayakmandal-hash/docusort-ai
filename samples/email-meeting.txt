@@ -1,0 +1,15 @@
+From: Neha Kapoor <neha.kapoor@brightlane.in>
+To: Facilities Team <facilities@brightlane.in>
+Subject: Projector in conference room B
+Date: Mon, 12 Oct 2026 09:41
+
+Hi team,
+
+The projector in conference room B has stopped detecting HDMI input since Friday. We have a client review there on Wednesday at 3 pm, so could someone take a look before then?
+
+If it needs a replacement part, let me know the cost and I'll approve it today. You can reach me on 98765 43210 if anything is unclear.
+
+Thanks,
+Neha
+
+(Sample email written for the DocuSort demo. People and companies are fictional.)

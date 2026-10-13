@@ -1,0 +1,11 @@
+Flask>=3.0
+# The saved model was trained with this exact scikit-learn version; keep them in step.
+scikit-learn==1.9.1
+numpy>=2.0
+scipy>=1.12
+joblib>=1.4
+pdfplumber>=0.11
+Pillow>=10.0
+# OCR for scans and photos (also needs the Tesseract program; the Dockerfile installs it)
+pytesseract>=0.3.10
+gunicorn>=22.0; platform_system != "Windows"

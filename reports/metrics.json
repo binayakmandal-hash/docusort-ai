@@ -1,0 +1,300 @@
+{
+  "dataset": {
+    "train": 3445,
+    "test": 862,
+    "outside": 133,
+    "per_class": {
+      "contract": 508,
+      "email": 600,
+      "form": 199,
+      "medical_report": 600,
+      "news_article": 600,
+      "receipt_invoice": 600,
+      "resume": 600,
+      "scientific_paper": 600
+    },
+    "sources": {
+      "contract": [
+        "cuad"
+      ],
+      "email": [
+        "enron"
+      ],
+      "form": [
+        "funsd"
+      ],
+      "medical_report": [
+        "mtsamples"
+      ],
+      "news_article": [
+        "bbc"
+      ],
+      "receipt_invoice": [
+        "sroie"
+      ],
+      "resume": [
+        "resume_corpus"
+      ],
+      "scientific_paper": [
+        "scitldr",
+        "pubmed"
+      ]
+    }
+  },
+  "cross_validation": {
+    "Complement Naive Bayes (words)": {
+      "mean": 0.9798,
+      "std": 0.004
+    },
+    "Logistic regression (words + characters)": {
+      "mean": 0.9979,
+      "std": 0.0018
+    },
+    "Linear SVM (words + characters)": {
+      "mean": 0.9987,
+      "std": 0.0012
+    }
+  },
+  "test": {
+    "accuracy": 0.9977,
+    "macro_f1": 0.9968,
+    "per_class": {
+      "contract": {
+        "precision": 1.0,
+        "recall": 0.99,
+        "f1": 0.995,
+        "support": 102
+      },
+      "email": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 120
+      },
+      "form": {
+        "precision": 0.976,
+        "recall": 1.0,
+        "f1": 0.988,
+        "support": 40
+      },
+      "medical_report": {
+        "precision": 1.0,
+        "recall": 0.992,
+        "f1": 0.996,
+        "support": 120
+      },
+      "news_article": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 120
+      },
+      "receipt_invoice": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 120
+      },
+      "resume": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 120
+      },
+      "scientific_paper": {
+        "precision": 0.992,
+        "recall": 1.0,
+        "f1": 0.996,
+        "support": 120
+      }
+    },
+    "confusion": {
+      "labels": [
+        "contract",
+        "email",
+        "form",
+        "medical_report",
+        "news_article",
+        "receipt_invoice",
+        "resume",
+        "scientific_paper"
+      ],
+      "matrix": [
+        [
+          101,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          120,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          40,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          119,
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          120,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          120,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          120,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          120
+        ]
+      ]
+    }
+  },
+  "outside": {
+    "accuracy": 0.8346,
+    "by_source": {
+      "agnews": {
+        "label": "news_article",
+        "n": 120,
+        "accuracy": 0.8917,
+        "predicted": {
+          "news_article": 107,
+          "form": 7,
+          "email": 4,
+          "scientific_paper": 1,
+          "contract": 1
+        }
+      },
+      "invoice2data": {
+        "label": "receipt_invoice",
+        "n": 13,
+        "accuracy": 0.3077,
+        "predicted": {
+          "form": 9,
+          "receipt_invoice": 4
+        }
+      }
+    }
+  },
+  "leave_one_source_out": {
+    "pubmed": {
+      "n": 300,
+      "accuracy": 0.0233,
+      "predicted": {
+        "medical_report": 268,
+        "email": 19,
+        "scientific_paper": 7,
+        "form": 3,
+        "news_article": 2,
+        "resume": 1
+      }
+    },
+    "scitldr": {
+      "n": 300,
+      "accuracy": 0.4033,
+      "predicted": {
+        "news_article": 144,
+        "scientific_paper": 121,
+        "resume": 33,
+        "medical_report": 2
+      }
+    }
+  },
+  "robustness": {
+    "first 300 characters": 0.993,
+    "first 100 characters": 0.9234,
+    "5% OCR errors": 0.9977,
+    "15% OCR errors": 0.9965
+  },
+  "confidence": {
+    "0.5": {
+      "share_sure": 1.0,
+      "accuracy_when_sure": 0.9977
+    },
+    "0.7": {
+      "share_sure": 0.9965,
+      "accuracy_when_sure": 0.9977
+    },
+    "outside_median_top_probability": 0.9154
+  },
+  "trained_on": 4307,
+  "minutes": 4.7,
+  "receipt_fields": {
+    "split": "heldout",
+    "receipts": 526,
+    "seller_exact": 0.772,
+    "seller_loose": 0.954,
+    "date": 0.968,
+    "total": 0.7,
+    "date_found": 0.985,
+    "total_found": 0.817
+  },
+  "sensitive_scan": {
+    "documents": 4307,
+    "hits": {
+      "email": 67,
+      "phone": 4,
+      "card": 5,
+      "account": 1
+    },
+    "documents_with_hits": {
+      "email": 52,
+      "phone": 3,
+      "card": 5,
+      "account": 1
+    }
+  }
+}

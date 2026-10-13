@@ -1,0 +1,3 @@
+# Extra packages for rebuilding the dataset and retraining (not needed to run the app)
+-r requirements.txt
+pandas>=2.2

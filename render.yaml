@@ -1,0 +1,8 @@
+# Render Blueprint: Render dashboard -> New -> Blueprint -> pick this repo.
+services:
+  - type: web
+    name: docusort-ai
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    # One worker keeps sorted batches (held in memory for 15 minutes) available for download.
